@@ -1,0 +1,5 @@
+{
+  "name": "SmartSort — AI-Based Smart Waste Segregation System",
+  "description": "AI-based smart waste segregation system with real-time camera capture, FastAPI backend integration, confidence scoring, and Arduino flap control.",
+  "requestFramePermissions": []
+}
