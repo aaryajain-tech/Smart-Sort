@@ -1,3 +1,6 @@
+Hello everyone! <br>  This project is done using software and hardware which helped me learn the basics of Arduino UNO and how to connect them with the frontend.<br>
+Feel free to add new features!!!
+
 # ♻️ SmartSort — AI-Based Smart Waste Segregator
 
 SmartSort is a working prototype that classifies selected waste items as **paper**, **plastic**, or **organic** using a camera and Groq vision AI. After reviewing an accepted result, the user can send a command to an Arduino to move a servo-controlled flap.
