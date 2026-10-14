@@ -3,7 +3,7 @@ Feel free to add new features!!!
 
 # ♻️ SmartSort — AI-Based Smart Waste Segregator
 
-SmartSort is a working prototype that classifies selected waste items as **paper**, **plastic**, or **organic** using a camera and Groq vision AI. After reviewing an accepted result, the user can send a command to an Arduino to move a servo-controlled flap.
+SmartSort is a working prototype that classifies selected waste items as **paper**, **plastic**, or **organic** using a camera and Groq vision AI. Accepted results automatically send a command to a connected Arduino to move a servo-controlled flap.
 
 > This project uses a hosted vision model through the Groq API. It does not train a local TensorFlow model or use OpenCV.
 
@@ -24,14 +24,14 @@ Groq vision classification
       ↓
 Category + confidence + explanation
       ↓
-User presses the sort button
+Accepted result and connected Arduino?
       ↓
 Python sends PAPER / PLASTIC / ORGANIC over USB serial
       ↓
 Arduino moves the servo flap
 ```
 
-The motor does **not** move automatically after classification. A result must be accepted by the confidence threshold, and the user must press the sort button.
+The flap moves automatically when the result meets the confidence threshold and the Arduino is connected. Low-confidence or unknown results are never sent to the Arduino. If automatic actuation fails, the dashboard reports the error and offers a retry.
 
 ---
 
@@ -85,7 +85,7 @@ The Arduino is required for physical sorting. The camera and AI can classify ind
 Open a terminal in the project directory:
 
 ```powershell
-cd "E:\My Documents\Downloads\SmartSort_Backend_Starter"
+cd "E:\My Documents\Downloads\SmartSort"
 ```
 
 Create a Python virtual environment and install the backend requirements:
@@ -148,13 +148,13 @@ The Python backend checks for the Arduino's `SMARTSORT_READY` handshake at **960
 The current sketch defines:
 
 ```text
-Paper    → 30°
+Paper    → 20°
 Plastic  → 90°
-Organic  → 150°
-Rest     → 90°
+Organic  → 30°
+Rest     → 0°
 ```
 
-**Important:** Plastic is currently set to the same angle as the rest position, so it will not move to a visibly different position. These values are example positions, not guaranteed positions for every flap. Adjust the category and rest angles to match your servo mounting and bin layout.
+These values are example positions, not guaranteed positions for every flap. Adjust the category and rest angles to match your servo mounting and bin layout.
 
 Before connecting the flap or placing waste in the bins, test the servo with the linkage clear and adjust its angles in small steps. Avoid forcing the servo against a hard stop. Use an appropriate external servo power supply if required by the motor, and connect its ground to Arduino ground.
 
@@ -184,7 +184,7 @@ Keep the terminal open while using the app. Press **Ctrl+C** to stop the service
 2. Open `http://localhost:3000`.
 3. Allow camera access, or upload a real photo of one waste item.
 4. Scan the item and review the predicted category, confidence, and explanation.
-5. If the result is accepted and the Arduino is connected, press the sort button to move the flap.
+5. If the result is accepted and the Arduino is connected, SmartSort automatically moves the flap. If actuation fails, use the dashboard's retry button after resolving the issue.
 
 The browser generally permits camera access on `localhost`. If camera access is denied, check browser permissions or use the photo upload control.
 
@@ -199,7 +199,9 @@ Confidence meets threshold
         ↓
 Result is accepted
         ↓
-User may request a physical sort
+Arduino connected → flap moves automatically
+
+Arduino disconnected → dashboard reports that no sort was sent
 
 Confidence below threshold or unknown item
         ↓
@@ -250,9 +252,9 @@ The Arduino does not perform AI classification. It only responds to commands sen
 ### Servo does not move
 
 - Confirm the dashboard reports Arduino connected and the result is accepted.
-- Make sure you pressed the sort button.
+- Accepted results trigger sorting automatically when the Arduino is connected. If an actuation error appears, reconnect the board and use the retry button.
 - Check signal wiring to pin 9, servo power, and common ground.
-- Ensure the target angle differs from `REST_ANGLE`; the current plastic and rest angles are both 90°.
+- Ensure the target angle differs from `REST_ANGLE`; the sketch's current plastic angle is 90° and its rest angle is 0°.
 - Test with the flap linkage disconnected, then tune safe angles for your mechanism.
 
 ---
@@ -273,8 +275,8 @@ Everyone should understand the full flow from camera capture to the physical fla
 
 1. Verify `/api/status` reports the API online, Groq configured, and Arduino connected.
 2. Scan a clearly visible paper item and inspect the result.
-3. Press the sort button and confirm the flap moves to the paper bin.
+3. Scan a paper item and confirm an accepted result automatically moves the flap to the paper bin.
 4. Repeat with a plastic item and a plant-based organic item.
-5. Show an unclear or unsupported item and confirm it is not automatically actuated.
+5. Show an unclear or unsupported item and confirm it is not actuated.
 
 The project is a prototype. Classification quality, API access, camera conditions, servo calibration, and mechanical alignment all affect the demonstration.
